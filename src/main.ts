@@ -1,16 +1,22 @@
-import { NestFactory } from '@nestjs/core';
-import { ValidationPipe } from '@nestjs/common';
-import { AppModule } from './app.module';
+import { NestFactory } from '@nestjs/core'
+import { ValidationPipe } from '@nestjs/common'
+import { AppModule } from './app.module'
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule)
+
+  app.use(
+    require('cookie-session')({
+      keys: ['asdf']
+    })
+  )
 
   app.useGlobalPipes(
     new ValidationPipe({
-      whitelist: true,
-    }),
-  );
+      whitelist: true
+    })
+  )
 
-  await app.listen(3000);
+  await app.listen(3000)
 }
-bootstrap();
+bootstrap()
