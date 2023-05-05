@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { NotFoundException } from '@nestjs/common';
+import { NotFoundException } from '@nestjs/common'
 import { UsersController } from './users.controller'
 import { UsersService } from './users.service'
 import { AuthService } from './auth.service'
@@ -27,7 +27,9 @@ describe('UsersController', () => {
     }
     fakeAuthService = {
       // signup: () => {},
-      // signin: () => {}
+      signin: (email: string, password: string) => {
+        return Promise.resolve({ id: 1, email, password } as User)
+      }
     }
     const module: TestingModule = await Test.createTestingModule({
       controllers: [UsersController],
@@ -50,9 +52,9 @@ describe('UsersController', () => {
   })
 
   it('findUser throws an error if user with given id is not found', async () => {
-    fakeUsersService.findOne = () => null;
-    await expect(controller.findUser('1')).rejects.toThrow(NotFoundException);
-  });
+    fakeUsersService.findOne = () => null
+    await expect(controller.findUser('1')).rejects.toThrow(NotFoundException)
+  })
 
   it('findUser returns the user with the given id', async () => {
     const user = await controller.findUser('1')
@@ -60,7 +62,20 @@ describe('UsersController', () => {
   })
 
   it('findUser throws an error if user with given id is not found', async () => {
-    fakeUsersService.findOne = () => null;
-    await expect(controller.findUser('1')).rejects.toThrow(NotFoundException);
+    fakeUsersService.findOne = () => null
+    await expect(controller.findUser('1')).rejects.toThrow(NotFoundException)
+  })
+
+  it('signin updates session object and returns user', async () => {
+    const session = { userId: null }
+    const user = await controller.signin(
+      {
+        email: 'test@test.com',
+        password: 'password'
+      },
+      session
+    )
+    expect(user.id).toEqual(1)
+    expect(session.userId).toEqual(1)
   })
 })
